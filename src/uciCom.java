@@ -23,6 +23,12 @@ public class uciCom {
 	}
 	
     }
+
+    public void sendBestMove(String move) {
+
+	System.out.println("bestmove " + move);
+
+    }
 }
 
 	    
