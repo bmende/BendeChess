@@ -4,6 +4,11 @@ import java.util.*;
 
 public class Board {
 
+    public static final int NUM_PIECES = 32;
+    public static final int NUM_SQUARES = 64;
+    public static final int NUM_RANKS = 8;
+    public static final int NUM_FILES = 8;
+
     /* Two different board representations: the first
      * is piece-centric, ie the piecelist. The other is
      * the board. The board and piece list should obviously
@@ -32,7 +37,7 @@ public class Board {
 
 	//begin by initializing piece list.
 
-	pieceList = new Piece[32];
+	pieceList = new Piece[NUM_PIECES];
 	pieceList[0] =  new Piece("rook",   "white", "a1");
 	pieceList[1] =  new Piece("knight", "white", "b1");
 	pieceList[2] =  new Piece("bishop", "white", "c1");
@@ -41,13 +46,13 @@ public class Board {
 	pieceList[5] =  new Piece("bishop", "white", "f1");
 	pieceList[6] =  new Piece("knight", "white", "g1");
 	pieceList[7] =  new Piece("rook",   "white", "h1");
-	for (int file = 0; file < 8; file++) {
+	for (int file = 0; file < NUM_FILES; file++) {
 	    char f = (char)('a' + file);
 	    String pos = new String(Character.toString(f));
 	    pos += Character.toString('2');
 	    pieceList[file+8] = new Piece("pawn", "white", pos);
 	}
-	for (int file = 0; file < 8; file++) {
+	for (int file = 0; file < NUM_FILES; file++) {
 	    char f = (char)('a' + file);
 	    String pos = new String(Character.toString(f));
 	    pos += Character.toString('7');
@@ -62,6 +67,25 @@ public class Board {
 	pieceList[30] = new Piece("knight", "black", "g8");
 	pieceList[31] = new Piece("rook",   "black", "h8");
 
+	//now initialize board-centric representation
+	board = new Piece[NUM_SQUARES];
+
+	for (int piece = 0; piece < NUM_PIECES; piece++) {
+	    int pos = pieceList[piece].getBoardPos();
+	    String type = pieceList[piece].getType();
+	    String color = pieceList[piece].getColor();
+	    String curSquare = pieceList[piece].getSquare();
+	    board[pos] = new Piece(type, color, curSquare);
+	}
+	for (int piece = NUM_PIECES/2;
+	     piece < (NUM_SQUARES - NUM_PIECES/2); piece++) {
+	    char file = (char)((piece % NUM_FILES) + 'a');
+	    String pos = new String(Character.toString(file));
+	    int rank = (piece - (piece % NUM_FILES)) / NUM_RANKS;
+	    rank++; //since in human notation ranks are 1-indexed
+	    pos += Integer.toString(rank);
+	    board[piece] = new Piece("null", "null", pos);
+	}
     }
 
 }

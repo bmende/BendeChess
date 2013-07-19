@@ -16,7 +16,7 @@ public class Piece {
 	int file = (curSquare.charAt(0) - 'a');
 	int rank = Character.getNumericValue(curSquare.charAt(1)) - 1;
 
-	boardPos = ((8 * rank) + file);
+	boardPos = ((Board.NUM_FILES * rank) + file);
 
 	//	System.out.println(color+" "+type+" "+curSquare+" "+boardPos);
 
