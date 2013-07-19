@@ -41,22 +41,18 @@ public class Board {
 	pieceList[5] =  new Piece("bishop", "white", "f1");
 	pieceList[6] =  new Piece("knight", "white", "g1");
 	pieceList[7] =  new Piece("rook",   "white", "h1");
-	pieceList[8] =  new Piece("pawn",   "white", "a2");
-	pieceList[9] =  new Piece("pawn",   "white", "b2");
-	pieceList[10] = new Piece("pawn",   "white", "c2");
-	pieceList[11] = new Piece("pawn",   "white", "d2");
-	pieceList[12] = new Piece("pawn",   "white", "e2");
-	pieceList[13] = new Piece("pawn",   "white", "f2");
-	pieceList[14] = new Piece("pawn",   "white", "g2");
-	pieceList[15] = new Piece("pawn",   "white", "h2");
-	pieceList[16] = new Piece("pawn",   "black", "a7");
-	pieceList[17] = new Piece("pawn",   "black", "b7");
-	pieceList[18] = new Piece("pawn",   "black", "c7");
-	pieceList[19] = new Piece("pawn",   "black", "d7");
-	pieceList[20] = new Piece("pawn",   "black", "e7");
-	pieceList[21] = new Piece("pawn",   "black", "f7");
-	pieceList[22] = new Piece("pawn",   "black", "g7");
-	pieceList[23] = new Piece("pawn",   "black", "h7");
+	for (int file = 0; file < 8; file++) {
+	    char f = (char)('a' + file);
+	    String pos = new String(Character.toString(f));
+	    pos += Character.toString('2');
+	    pieceList[file+8] = new Piece("pawn", "white", pos);
+	}
+	for (int file = 0; file < 8; file++) {
+	    char f = (char)('a' + file);
+	    String pos = new String(Character.toString(f));
+	    pos += Character.toString('7');
+	    pieceList[file+16] = new Piece("pawn", "black", pos);
+	}
 	pieceList[24] = new Piece("rook",   "black", "a8");
 	pieceList[25] = new Piece("knight", "black", "b8");
 	pieceList[26] = new Piece("bishop", "black", "c8");
@@ -65,6 +61,7 @@ public class Board {
 	pieceList[29] = new Piece("bishop", "black", "f8");
 	pieceList[30] = new Piece("knight", "black", "g8");
 	pieceList[31] = new Piece("rook",   "black", "h8");
+
     }
 
 }
