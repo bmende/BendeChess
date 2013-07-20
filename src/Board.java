@@ -52,20 +52,20 @@ public class Board {
 	    pos += Character.toString('2');
 	    pieceList[file+8] = new Piece("pawn", "white", pos);
 	}
+	pieceList[16] = new Piece("rook",   "black", "a8");
+	pieceList[17] = new Piece("knight", "black", "b8");
+	pieceList[18] = new Piece("bishop", "black", "c8");
+	pieceList[19] = new Piece("queen",  "black", "d8");
+	pieceList[20] = new Piece("king",   "black", "e8");
+	pieceList[21] = new Piece("bishop", "black", "f8");
+	pieceList[22] = new Piece("knight", "black", "g8");
+	pieceList[23] = new Piece("rook",   "black", "h8");
 	for (int file = 0; file < NUM_FILES; file++) {
 	    char f = (char)('a' + file);
 	    String pos = new String(Character.toString(f));
 	    pos += Character.toString('7');
-	    pieceList[file+16] = new Piece("pawn", "black", pos);
+	    pieceList[file+24] = new Piece("pawn", "black", pos);
 	}
-	pieceList[24] = new Piece("rook",   "black", "a8");
-	pieceList[25] = new Piece("knight", "black", "b8");
-	pieceList[26] = new Piece("bishop", "black", "c8");
-	pieceList[27] = new Piece("queen",  "black", "d8");
-	pieceList[28] = new Piece("king",   "black", "e8");
-	pieceList[29] = new Piece("bishop", "black", "f8");
-	pieceList[30] = new Piece("knight", "black", "g8");
-	pieceList[31] = new Piece("rook",   "black", "h8");
 
 	//now initialize board-centric representation
 	board = new Piece[NUM_SQUARES];
@@ -86,6 +86,143 @@ public class Board {
 	    pos += Integer.toString(rank);
 	    board[piece] = new Piece("null", "null", pos);
 	}
+
+	colorToMove = "white";
+
+	history = new Stack<String>();
     }
+
+
+    public void executeMove(String move) {
+	String start = move.substring(0, 2);
+	String end = move.substring(2);
+
+	int file = (start.charAt(0) - 'a');
+	int rank = Character.getNumericValue(start.charAt(1)) - 1;
+
+	int startPos = (8 * rank) + file;
+	if (startPos < 0 || startPos >= NUM_SQUARES) {
+	    //not a square
+	    System.out.println(start + " is NOT a square!!");
+	    System.exit(0);
+	}
+
+	file = (end.charAt(0) - 'a');
+	rank = Character.getNumericValue(end.charAt(1)) - 1;
+
+	int endPos = (8 * rank) + file;
+	if (endPos < 0 || endPos >= NUM_SQUARES) {
+	    //not a square
+	    System.out.println(end + " is NOT a square!!!");
+	    System.exit(0);
+	}
+
+	// check to make sure move isn't illegal
+	if (board[endPos].getColor().equals(
+			     board[startPos].getColor())) {
+	    //this signifies an illegal move
+	    System.out.println("Cant capture own piece!!!");
+	    System.exit(0);
+	}
+	if (!board[endPos].equals("null")) {
+	    for (int i = 0; i < NUM_PIECES; i++) {
+		if (pieceList[i].getSquare().equals(end)) {
+		    pieceList[i].capturePiece();
+		    break;
+		}
+	    }
+	}
+	
+	for (int i = 0; i < NUM_PIECES; i++) {
+	    if (pieceList[i].movePiece(start, end)) {;
+		break;
+		// this will work since movePiece only returns true
+		// if start == curSquare
+	    }
+	}
+
+	board[endPos].movePiece(board[startPos]);
+	board[startPos].nullify();
+
+	// remember to change colorToMove
+	if (colorToMove.equals("white")) 
+	    colorToMove = "black";
+	else if (colorToMove.equals("black"))
+	    colorToMove = "white";
+
+	history.push(move);
+    }
+
+
+    //The following was initially designed for debugging
+    //but I have also realized it can facilitate command
+    //line play.
+    public void printBoard() {
+
+	for (int rank = NUM_RANKS - 1; rank >= 0; rank--) {
+	    for (int file = 0; file < NUM_FILES; file++) {
+		int pos = ((8 * rank) + file);
+		Piece cur = board[pos];
+		if (cur.getType().equals("null")) {
+		    System.out.print("--");
+		}
+		if (cur.getColor().equals("white")) {
+		    if (cur.getType().equals("pawn")) {
+			System.out.print("wp");
+		    }
+		    if (cur.getType().equals("rook")) {
+			System.out.print("wr");
+		    }
+		    if (cur.getType().equals("knight")) {
+			System.out.print("wn");
+		    }
+		    if (cur.getType().equals("bishop")) {
+			System.out.print("wb");
+		    }
+		    if (cur.getType().equals("queen")) {
+			System.out.print("wq");
+		    }
+		    if (cur.getType().equals("king")) {
+			System.out.print("wk");
+		    }
+		}
+		else if (cur.getColor().equals("black")) {
+		    if (cur.getType().equals("pawn")) {
+			System.out.print("bp");
+		    }
+		    if (cur.getType().equals("rook")) {
+			System.out.print("br");
+		    }
+		    if (cur.getType().equals("knight")) {
+			System.out.print("bn");
+		    }
+		    if (cur.getType().equals("bishop")) {
+			System.out.print("bb");
+		    }
+		    if (cur.getType().equals("queen")) {
+			System.out.print("bq");
+		    }
+		    if (cur.getType().equals("king")) {
+			System.out.print("bk");
+		    }
+		}
+		System.out.print(" ");
+	    } // file loop
+	    System.out.println("");
+	} // rank loop
+
+	System.out.println(colorToMove + " to move.\n");
+    }
+
+    public void printPieceList() {
+	for (int i = 0; i < NUM_PIECES; i++) {
+	    pieceList[i].printPiece();
+	}
+    }
+
+    public void printHistory() {
+	System.out.println(history);
+    }
+
 
 }
