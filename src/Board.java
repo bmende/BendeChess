@@ -221,6 +221,25 @@ public class Board {
 	System.out.println(colorToMove + " to move.\n");
     }
 
+    public Piece[] getPieceList() {
+	return pieceList;
+    }
+
+    public Piece getPieceAt(String square) {
+	int file = square.charAt(0) - 'a';
+	int rank = Character.getNumericValue(square.charAt(1)) - 1;
+
+	return getPieceAt(file, rank);
+    }
+
+    public Piece getPieceAt(int file, int rank) {
+	return board[(8*rank)+file];
+    }
+    public Piece getPieceAt(int square) {
+	return board[square];
+    }
+	
+
     public void printPieceList() {
 	for (int i = 0; i < NUM_PIECES; i++) {
 	    pieceList[i].printPiece();
