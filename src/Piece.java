@@ -22,6 +22,11 @@ public class Piece {
 
     }
 
+    //copy constructor
+    public Piece (Piece copy) {
+	this(copy.type, copy.color, copy.curSquare);
+    }
+
     public String getType() { return type; }
     public String getColor() { return color; }
     public String getSquare() { return curSquare; }

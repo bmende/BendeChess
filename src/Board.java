@@ -92,6 +92,34 @@ public class Board {
 	history = new Stack<String>();
     }
 
+    //copy constructor
+    public Board(Board copy) {
+	this.pieceList = new Piece[NUM_PIECES];
+	for (int i = 0; i < NUM_PIECES; i++) {
+	    this.pieceList[i] = new Piece(copy.pieceList[i]);
+	}
+	this.board = new Piece[NUM_SQUARES];
+	for (int i = 0; i < NUM_SQUARES; i++) {
+	    this.board[i] = new Piece(copy.board[i]);
+	}
+	this.colorToMove = new String(copy.colorToMove);
+	this.history = new Stack<String>();
+	this.history.addAll(copy.history);
+    }
+
+    public void copy(Board copy) {
+	this.pieceList = new Piece[NUM_PIECES];
+	for (int i = 0; i < NUM_PIECES; i++) {
+	    this.pieceList[i] = new Piece(copy.pieceList[i]);
+	}
+	this.board = new Piece[NUM_SQUARES];
+	for (int i = 0; i < NUM_SQUARES; i++) {
+	    this.board[i] = new Piece(copy.board[i]);
+	}
+	this.colorToMove = new String(copy.colorToMove);
+	this.history = new Stack<String>();
+	this.history.addAll(copy.history);
+    }
 
     public void executeMove(String move) {
 	String start = move.substring(0, 2);
@@ -237,6 +265,10 @@ public class Board {
     }
     public Piece getPieceAt(int square) {
 	return board[square];
+    }
+
+    public String getLastMove() {
+	return history.peek();
     }
 	
 
