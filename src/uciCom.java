@@ -1,6 +1,6 @@
 package chess;
 
-import java.util.Scanner;
+import java.util.*;
 
 public class uciCom {
     //the main job of uciCom is reading
@@ -32,53 +32,66 @@ public class uciCom {
 	    return false;
     }
 
-    public void handleCommand() {
+    public Command getCommand() {
 
+	Command whatToDo = new Command();
 	if (!hasCommand()) {
-	    return; // no command to handle
+	    return whatToDo; // no command to handle
 	}
 
 	//we have a command. lets store it
-        String cmd = in.nextLine();
+        String totCmd = in.nextLine();
+	Scanner cmdScan = new Scanner(totCmd);
+	String cmd = cmdScan.next();
 
 	if (cmd.equals("isready")) {
 	    System.out.println("readyok");
-	    return;
+	    return whatToDo;
 	}
-	else if (cmd.contains("setoption name")) {
+	else if (cmd.equals("setoption")) {
 	    //do nothing yet;
-	    return;
+	    return whatToDo;
 	}
-	else if (cmd.contains("register")) {
+	else if (cmd.equals("register")) {
 	    //do nothing yet;
-	    return;
+	    return whatToDo;
 	}
-	else if (cmd.contains("ucinewgame")) {
-	    //do nothing yet;
-	    return;
+	else if (cmd.equals("ucinewgame")) {
+	    whatToDo.topLevelCmd = "newgame";
+	    return whatToDo;
 	}
-	else if (cmd.contains("position")) {
-	    //do nothing yet, but soon
-	    return;
+	else if (cmd.equals("position")) {
+	    cmd = cmdScan.next();
+	    if (cmd.equals("startpos")) {
+		cmd = cmdScan.next();
+		if (cmd.equals("moves")) {
+		    while (cmdScan.hasNext()) {
+			String nextMove = cmdScan.next();
+			System.out.println(nextMove);
+			whatToDo.gameHistory.push(nextMove);
+		    }
+		}
+	    }
+	    whatToDo.topLevelCmd = "position";
+	    return whatToDo;
 	}
-	else if (cmd.contains("go")) {
-	    sendBestMove("g8f6");
-	    return;
+	else if (cmd.equals("go")) {
+	    whatToDo.topLevelCmd = "go";
+	    return whatToDo;
 	}
 	else if (cmd.equals("stop")) {
-	    sendBestMove("f6g8");
-	    return;
+	    whatToDo.topLevelCmd = "stop";
+	    return whatToDo;
 	}
 	else if (cmd.equals("ponderhit")) {
 	    // we dont ponder, so do nothing
-	    return;
+	    return whatToDo;
 	}
 	else if (cmd.equals("quit")) {
-	    // exit the program
-	    System.exit(0);
+	    whatToDo.topLevelCmd = "quit";
+	    return whatToDo;
 	}
-	    
-	
+	return whatToDo;//in case nothing else worked
 	
     }
 
@@ -91,7 +104,14 @@ public class uciCom {
 
 class Command {
 
-    private int cmd;
+    public String topLevelCmd;
+    public Stack<String> gameHistory;
+
+    public Command() {
+	topLevelCmd = "null";
+	gameHistory = new Stack<String>();
+    }
+    
 
 }
 

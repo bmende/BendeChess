@@ -153,6 +153,13 @@ public class Board {
 	history.push(move);
     }
 
+    public boolean whiteToMove() {
+	return colorToMove.equals("white");
+    }
+
+    public boolean blackToMove() {
+	return colorToMove.equals("black");
+    }
 
     //The following was initially designed for debugging
     //but I have also realized it can facilitate command

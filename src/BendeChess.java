@@ -1,29 +1,54 @@
 package chess;
 
-import java.util.Scanner;
+import java.util.*;
 
 public class BendeChess {
 
     public static void main(String[] args) {
 
-	// engine must build communicator to use gui
-	uciCom guiCommune = new uciCom();
+	BendeChess game = new BendeChess();
+	game.gameLoop();
+    }
 
-	Board b = new Board();
-	b.printBoard();
-	b.executeMove("e2e4");
-	b.printBoard();
-	b.executeMove("d7d5");
-	b.printBoard();
-	b.executeMove("e4d5");
-	b.printBoard();
+    Board board;
+    uciCom com;
 
-	b.printPieceList();
-	b.printHistory();
+    public BendeChess() {
 
-	Scanner in = new Scanner(System.in);
+	com = new uciCom();
+	board = new Board();
+
+    }
+    
+    /* this function is the most important loop.
+     * this is where we listen for command and 
+     * act accordingly.
+     */
+    public void gameLoop() {
+
 	while (true) {
-	    guiCommune.handleCommand();
+	    Command nextCmd = com.getCommand();
+	    handleCommand(nextCmd);
 	}
+    }
+
+
+    private boolean handleCommand(Command cmd) {
+	if (cmd.topLevelCmd.equals("null")) {
+	    return false;
+	}
+	if (cmd.topLevelCmd.equals("quit")) {
+	    System.out.println("Thanks for playing BendeChess");
+	    System.exit(0);
+	}
+	if (cmd.topLevelCmd.equals("go")) {
+	    board.printBoard();
+	}
+	if (cmd.topLevelCmd.equals("position")) {
+	    board.executeMove(cmd.gameHistory.peek());
+	}
+
+
+	return true;
     }
 }
