@@ -99,10 +99,6 @@ public class Board {
 	this.pieceList = new Piece[NUM_PIECES];
 	for (int i = 0; i < NUM_PIECES; i++) {
 	    this.pieceList[i] = new Piece(copy.pieceList[i]);
-	    if (copy.pieceList[i].isCaptured()) {
-		this.pieceList[i].printPiece();
-		copy.pieceList[i].printPiece();
-	    }
 	}
 	this.board = new Piece[NUM_SQUARES];
 	for (int i = 0; i < NUM_SQUARES; i++) {
@@ -256,14 +252,14 @@ public class Board {
 	    int file = pos.charAt(0) - 'a';
 	    int rank = Character.getNumericValue(pos.charAt(1)) - 1;
 	    if (tempList[i].getType().equals("pawn")) {
-		if (whiteToMove()) {
+		if (blackToMove()) {
 		    if (k_rank - rank == 1) {
 			if (Math.abs(k_file - file) == 1) {
 			    return true;
 			}
 		    }
 		}
-		else if (blackToMove()) {
+		else if (whiteToMove()) {
 		    if (rank - k_rank == 1) {
 			if (Math.abs(k_file - file) == 1) {
 			    return true;
