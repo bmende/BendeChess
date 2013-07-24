@@ -75,7 +75,7 @@ public class Piece {
 
     public boolean isCaptured() {
 
-	if (boardPos == -1) return true;
+	if (curSquare.equals("captured")) return true;
 
 	return false;
     }

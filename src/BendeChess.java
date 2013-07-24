@@ -45,18 +45,13 @@ public class BendeChess {
 	}
 	if (cmd.topLevelCmd.equals("go")) {
 	    board.printBoard();
+	    ArrayList<Board> nexts = moveGen.nextMoves(board);
+	    board.copy(nexts.get(0));
+	    board.printBoard();
+	    com.sendBestMove(board.getLastMove());
 	}
 	if (cmd.topLevelCmd.equals("position")) {
 	    board.executeMove(cmd.gameHistory.peek());
-	    board.printBoard();
-	    board.printHistory();
-	    ArrayList<Board> nexts = moveGen.nextMoves(board);
-	    System.out.println(nexts.get(0).getLastMove());
-	    if (!nexts.isEmpty()) {
-		board.copy(nexts.get(0));
-		board.printBoard();
-		board.printHistory();
-	    }
 	}
 
 

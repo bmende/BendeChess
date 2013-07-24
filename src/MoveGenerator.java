@@ -75,13 +75,9 @@ public class MoveGenerator {
 	int rank = Character.getNumericValue(start.charAt(1)) - 1;
 
 	int oneUp = rank+nextRank;
-	if (oneUp >= Board.NUM_RANKS || oneUp < 0) {
-	    System.out.println("reached the end of the board");
-	    return;
-	}
+	int fileLeft = file - 1, fileRight = file + 1;
 
 	//check for captures
-	int fileLeft = file - 1, fileRight = file + 1;
 	if (fileLeft >= 0) {
 	    if (_curBoard.getPieceAt(fileLeft, oneUp).getColor().
 		equals(pawn.getColor()) ||
@@ -90,7 +86,7 @@ public class MoveGenerator {
 		fileLeft = -1;
 	    }
 	}
-	if (file < Board.NUM_FILES) {
+	if (fileRight < Board.NUM_FILES) {
 	    if (_curBoard.getPieceAt(fileRight, oneUp).getColor().
 		equals(pawn.getColor()) ||
 		_curBoard.getPieceAt(fileRight, oneUp).getType().
@@ -137,5 +133,6 @@ public class MoveGenerator {
 	}
 
 
+	
     }
 }

@@ -29,6 +29,7 @@ public class Board {
     private Piece board[];
 
     private String colorToMove;
+    private String colorInCheck;
 
     private Stack<String> history;
 
@@ -88,6 +89,7 @@ public class Board {
 	}
 
 	colorToMove = "white";
+	colorInCheck = "null";
 
 	history = new Stack<String>();
     }
@@ -97,6 +99,10 @@ public class Board {
 	this.pieceList = new Piece[NUM_PIECES];
 	for (int i = 0; i < NUM_PIECES; i++) {
 	    this.pieceList[i] = new Piece(copy.pieceList[i]);
+	    if (copy.pieceList[i].isCaptured()) {
+		this.pieceList[i].printPiece();
+		copy.pieceList[i].printPiece();
+	    }
 	}
 	this.board = new Piece[NUM_SQUARES];
 	for (int i = 0; i < NUM_SQUARES; i++) {
@@ -107,6 +113,7 @@ public class Board {
 	this.history.addAll(copy.history);
     }
 
+    //if you don't want to make a new board object
     public void copy(Board copy) {
 	this.pieceList = new Piece[NUM_PIECES];
 	for (int i = 0; i < NUM_PIECES; i++) {
@@ -121,37 +128,34 @@ public class Board {
 	this.history.addAll(copy.history);
     }
 
-    public void executeMove(String move) {
+    /*
+     * This function will check for move partial legality. 
+     * Some illegal moves will return false, to simplify
+     * move generation. False guarentees an illegal move,
+     * while a return value of true does not guarentee that
+     * the move is legal. Checks involve leaving the board,
+     * capturing a teammate. Checking for check soon to be added.
+     */
+    public boolean executeMove(String move) {
 	String start = move.substring(0, 2);
 	String end = move.substring(2);
 
-	int file = (start.charAt(0) - 'a');
-	int rank = Character.getNumericValue(start.charAt(1)) - 1;
+	int s_file = (start.charAt(0) - 'a');
+	int s_rank = Character.getNumericValue(start.charAt(1)) - 1;
+	int startPos = (NUM_RANKS * s_rank) + s_file;
 
-	int startPos = (8 * rank) + file;
-	if (startPos < 0 || startPos >= NUM_SQUARES) {
-	    //not a square
-	    System.out.println(start + " is NOT a square!!");
-	    System.exit(0);
+	int e_file = (end.charAt(0) - 'a');
+	int e_rank = Character.getNumericValue(end.charAt(1)) - 1;
+	int endPos = (NUM_RANKS * e_rank) + e_file;
+
+	//before we change the board state, check if the 
+	//proposed move is legal
+	if (!moveIsLegal(s_file, s_rank, e_file, e_rank)) {
+	    System.out.println("move is illegal");
+	    return false;
 	}
 
-	file = (end.charAt(0) - 'a');
-	rank = Character.getNumericValue(end.charAt(1)) - 1;
-
-	int endPos = (8 * rank) + file;
-	if (endPos < 0 || endPos >= NUM_SQUARES) {
-	    //not a square
-	    System.out.println(end + " is NOT a square!!!");
-	    System.exit(0);
-	}
-
-	// check to make sure move isn't illegal
-	if (board[endPos].getColor().equals(
-			     board[startPos].getColor())) {
-	    //this signifies an illegal move
-	    System.out.println("Cant capture own piece!!!");
-	    System.exit(0);
-	}
+	// deal with captures in the pieceList
 	if (!board[endPos].equals("null")) {
 	    for (int i = 0; i < NUM_PIECES; i++) {
 		if (pieceList[i].getSquare().equals(end)) {
@@ -179,6 +183,97 @@ public class Board {
 	    colorToMove = "white";
 
 	history.push(move);
+
+	return true; //can only get here if move is legal;
+    }
+
+    /*
+     * First check to make sure squares in question actually exit.
+     * Next we check to make sure that if there is a capture, it
+     * is a different colored piece.
+     */
+    public boolean moveIsLegal(int s_file, int s_rank,
+			       int e_file, int e_rank) {
+
+	if (s_file < 0 || s_file >= NUM_FILES ||
+	    s_rank < 0 || s_rank >= NUM_RANKS ||
+	    e_file < 0 || e_file >= NUM_FILES ||
+	    e_rank < 0 || e_rank >= NUM_RANKS) 
+	    {
+		return false;
+	    }
+	int startPos = (NUM_RANKS*s_rank) + s_file;
+	int endPos = (NUM_RANKS*e_rank) + e_file;
+
+	if (board[endPos].getColor().equals(colorToMove)) {
+	    // System.out.println("Cant capture own piece!!!");
+	    return false;
+	}
+
+	//now to see how this moves affect inCheck status
+	if (colorToMoveInCheck(startPos, endPos)) {
+	    System.out.println("leaves you in check");
+	    return false;
+	}
+	
+	
+	return true;
+    }
+
+    // if the side to move is in check at the end of move,
+    // then the move is illegal. Pass in the move that we
+    // want to check
+    public boolean colorToMoveInCheck(int startPos, int endPos) {
+	Piece king;
+	Piece[] tempList = new Piece[NUM_PIECES];
+	int k_rank, k_file, offset;
+
+	//copy the board and make the move on the copy.
+	for (int i = 0; i < NUM_PIECES; i++) {
+	    tempList[i] = new Piece(pieceList[i]);
+	    String start = board[startPos].getSquare();
+	    String end = board[endPos].getSquare();
+	    // piece only moves if this start == curSquare
+	    tempList[i].movePiece(start, end);
+	}
+	
+
+	if (whiteToMove()) {
+	    king = tempList[4];
+	    // we want to examine the position of the black pieces
+	    offset = NUM_PIECES/2;
+	} else {// blackToMove()
+	    king = tempList[20];
+	    // examine the position of the white pieces
+	    offset = 0;
+	}
+	String k_pos = king.getSquare();
+	k_file = k_pos.charAt(0) - 'a';
+	k_rank = Character.getNumericValue(k_pos.charAt(1)) - 1;
+
+	for (int i = offset; i < offset+NUM_PIECES/2; i++) {
+	    String pos = tempList[i].getSquare();
+	    int file = pos.charAt(0) - 'a';
+	    int rank = Character.getNumericValue(pos.charAt(1)) - 1;
+	    if (tempList[i].getType().equals("pawn")) {
+		if (whiteToMove()) {
+		    if (k_rank - rank == 1) {
+			if (Math.abs(k_file - file) == 1) {
+			    return true;
+			}
+		    }
+		}
+		else if (blackToMove()) {
+		    if (rank - k_rank == 1) {
+			if (Math.abs(k_file - file) == 1) {
+			    return true;
+			}
+		    }
+		}
+	    }
+	}
+
+	return false; // to get here, cant have been in check
     }
 
     public boolean whiteToMove() {

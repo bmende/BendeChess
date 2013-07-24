@@ -67,7 +67,6 @@ public class uciCom {
 		if (cmd.equals("moves")) {
 		    while (cmdScan.hasNext()) {
 			String nextMove = cmdScan.next();
-			System.out.println(nextMove);
 			whatToDo.gameHistory.push(nextMove);
 		    }
 		}
