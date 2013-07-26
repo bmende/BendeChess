@@ -222,6 +222,7 @@ public class Board {
     public boolean colorToMoveInCheck(int startPos, int endPos) {
 	Piece king;
 	Piece[] tempList = new Piece[NUM_PIECES];
+	Piece[] tempBoard = new Piece[NUM_SQUARES];
 	int k_rank, k_file, offset;
 
 	//copy the board and make the move on the copy.
@@ -232,12 +233,18 @@ public class Board {
 	    // piece only moves if this start == curSquare
 	    tempList[i].movePiece(start, end);
 	}
+
+	for (int i = 0; i < NUM_SQUARES; i++) {
+	    tempBoard[i] = new Piece(board[i]);
+	}
+	tempBoard[endPos].movePiece(tempBoard[startPos]);
+	tempBoard[startPos].nullify();
 	
 
 	if (whiteToMove()) {
 	    king = tempList[4];
 	    // we want to examine the position of the black pieces
-	    offset = NUM_PIECES/2;
+	    offset = 16;
 	} else {// blackToMove()
 	    king = tempList[20];
 	    // examine the position of the white pieces
@@ -247,10 +254,14 @@ public class Board {
 	k_file = k_pos.charAt(0) - 'a';
 	k_rank = Character.getNumericValue(k_pos.charAt(1)) - 1;
 
-	for (int i = offset; i < offset+NUM_PIECES/2; i++) {
+	// check for every piece and see if it puts king in check
+	for (int i = offset; i < offset+16; i++) {
+
 	    String pos = tempList[i].getSquare();
 	    int file = pos.charAt(0) - 'a';
 	    int rank = Character.getNumericValue(pos.charAt(1)) - 1;
+
+	    /************** Pawns ************************/
 	    if (tempList[i].getType().equals("pawn")) {
 		if (blackToMove()) {
 		    if (k_rank - rank == 1) {
@@ -266,8 +277,71 @@ public class Board {
 			}
 		    }
 		}
-	    }
+	    } // if pawn //////////////////////////////////
+
+	    /***************** Rooks *******************/
+	    else if (tempList[i].getType().equals("rook")) {
+		if ((Math.abs(rank - k_rank) == 1 && file == k_file)
+		    || (Math.abs(file - k_file) == 1 && rank == k_rank)) {
+		    //rook is right next to the king, so check
+		    return true;
+		}
+		int incr; boolean blocked = false;
+		// look to see if another piece blocks the rook
+		if (rank == k_rank) {
+		    incr = (file > k_file) ? -1 : 1;
+		    for (int j = file; j != k_file; j += incr) {
+			int square = (NUM_RANKS * rank) + j;
+			if (!tempBoard[square].isNull()) {
+			    blocked = true; //cant get king, notCheck
+			}
+		    }
+		    if (!blocked) { // we can get the king with the rook
+			return true;
+		    }
+		} // rook and king on same rank
+		else if (file == k_file) {
+		    incr = (rank > k_rank) ? -1 : 1;
+		    for (int j = rank; j != k_rank; j += incr) {
+			int square = (NUM_RANKS * j) + file;
+			if (!tempBoard[square].isNull()) {
+			    blocked = true;
+			}
+		    }
+		    if (!blocked) { // we can get the king with the rook
+			return true;
+		    }
+		} // rook and king on same file
+	    } // if rook ////////////////////////////////
+
+	    /********** Bishops **********************/
+	    else if (tempList[i].getType().equals("bishop")) {
+	    	boolean blocked = false;
+	    	if (Math.abs(rank - k_rank) != Math.abs(file - k_file)) {
+	    	    blocked = true;
+	    	}
+		if (Math.abs(rank - k_rank) == 1) {
+		    return true; // bishop right next to king
+		}
+		int f_inc, r_inc, r, f;
+		f_inc = (file < k_file) ? 1 : -1;
+		r_inc = (rank < k_rank) ? 1 : -1;
+		for (f = file, r = rank; (f != k_file) && (r != k_rank);
+		     f+=f_inc, r+=r_inc)
+		    {
+			int square = (NUM_RANKS * r) + f;
+			if (!tempBoard[square].isNull()) {
+			    blocked = true;
+			}
+		    }
+		    
+
+	    	if (!blocked) { // we can get the king with the bishop!!
+	    	    return true;
+	    	}
+	    } // if bishop ////////////////////////////
 	}
+	
 
 	return false; // to get here, cant have been in check
     }

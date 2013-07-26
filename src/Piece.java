@@ -31,6 +31,7 @@ public class Piece {
     public String getColor() { return color; }
     public String getSquare() { return curSquare; }
     public int getBoardPos() { return boardPos; }
+    public boolean isNull() { return type.equals("null"); }
 
     //pieceList move
     public boolean movePiece(String start, String end) {

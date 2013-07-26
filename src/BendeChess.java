@@ -46,6 +46,10 @@ public class BendeChess {
 	if (cmd.topLevelCmd.equals("go")) {
 	    board.printBoard();
 	    ArrayList<Board> nexts = moveGen.nextMoves(board);
+	    if (nexts.size() == 0) {
+		System.out.println("there were no legal moves");
+		return false;
+	    }
 	    board.copy(nexts.get(0));
 	    board.printBoard();
 	    com.sendBestMove(board.getLastMove());

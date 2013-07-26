@@ -12,7 +12,7 @@ public class MoveGenerator {
     }
 
     private void reset() {
-	posMoves.clear();
+	posMoves = new ArrayList<Board>();
     }
 
     //this function should be the only one called for this class
@@ -98,15 +98,17 @@ public class MoveGenerator {
 	    Board temp = new Board(_curBoard);
 	    String end = temp.getPieceAt(fileLeft, oneUp).
 		getSquare();
-	    temp.executeMove(start+end);
-	    posMoves.add(temp);
+	    if (temp.executeMove(start+end)) {
+		    posMoves.add(temp);
+		}
 	}
 	if (fileRight != -1) {
 	    Board temp = new Board(_curBoard);
 	    String end = temp.getPieceAt(fileRight, oneUp).
 		getSquare();
-	    temp.executeMove(start+end);
-	    posMoves.add(temp);
+	    if (temp.executeMove(start+end)) {
+		posMoves.add(temp);
+	    }
 	}
 
 
@@ -115,8 +117,9 @@ public class MoveGenerator {
 	    equals("null")) {
 	    Board temp = new Board(_curBoard);
 	    String end = temp.getPieceAt(file, oneUp).getSquare();
-	    temp.executeMove(start + end);
-	    posMoves.add(temp);
+	    if (temp.executeMove(start + end)) {
+		posMoves.add(temp);
+	    }
 	}
 
 	//check if two moves forward are allowed
@@ -128,8 +131,9 @@ public class MoveGenerator {
 	    int twoUp = oneUp+nextRank;
 	    Board temp = new Board(_curBoard);
 	    String end = temp.getPieceAt(file, twoUp).getSquare();
-	    temp.executeMove(start+end);
-	    posMoves.add(temp);
+	    if (temp.executeMove(start+end)) {
+		posMoves.add(temp);
+	    }
 	}
 
 
