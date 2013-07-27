@@ -133,6 +133,9 @@ public class Board {
      * capturing a teammate. Checking for check soon to be added.
      */
     public boolean executeMove(String move) {
+
+	history.push(move);
+
 	String start = move.substring(0, 2);
 	String end = move.substring(2);
 
@@ -178,8 +181,6 @@ public class Board {
 	else if (colorToMove.equals("black"))
 	    colorToMove = "white";
 
-	history.push(move);
-
 	return true; //can only get here if move is legal;
     }
 
@@ -208,7 +209,7 @@ public class Board {
 
 	//now to see how this moves affect inCheck status
 	if (colorToMoveInCheck(startPos, endPos)) {
-	    System.out.println("leaves you in check");
+	    //  System.out.println("leaves you in check");
 	    return false;
 	}
 	
@@ -230,6 +231,9 @@ public class Board {
 	    tempList[i] = new Piece(pieceList[i]);
 	    String start = board[startPos].getSquare();
 	    String end = board[endPos].getSquare();
+	    if (tempList[i].getSquare().equals(end)) {
+		tempList[i].capturePiece();
+	    }
 	    // piece only moves if this start == curSquare
 	    tempList[i].movePiece(start, end);
 	}
@@ -237,6 +241,7 @@ public class Board {
 	for (int i = 0; i < NUM_SQUARES; i++) {
 	    tempBoard[i] = new Piece(board[i]);
 	}
+
 	tempBoard[endPos].movePiece(tempBoard[startPos]);
 	tempBoard[startPos].nullify();
 	
@@ -266,6 +271,7 @@ public class Board {
 		if (blackToMove()) {
 		    if (k_rank - rank == 1) {
 			if (Math.abs(k_file - file) == 1) {
+			    System.out.print("pawn ");
 			    return true;
 			}
 		    }
@@ -273,6 +279,7 @@ public class Board {
 		else if (whiteToMove()) {
 		    if (rank - k_rank == 1) {
 			if (Math.abs(k_file - file) == 1) {
+			    System.out.print("pawn ");
 			    return true;
 			}
 		    }
@@ -280,10 +287,12 @@ public class Board {
 	    } // if pawn //////////////////////////////////
 
 	    /***************** Rooks *******************/
-	    else if (tempList[i].getType().equals("rook")) {
+	    /************* Partial Queens ***************/
+	    else if (tempList[i].getType().equals("rook") ||
+		     tempList[i].getType().equals("queen")) {
 		if ((Math.abs(rank - k_rank) == 1 && file == k_file)
 		    || (Math.abs(file - k_file) == 1 && rank == k_rank)) {
-		    //rook is right next to the king, so check
+		    //rook/queen is right next to the king, so check
 		    return true;
 		}
 		int incr; boolean blocked = false;
@@ -296,10 +305,11 @@ public class Board {
 			    blocked = true; //cant get king, notCheck
 			}
 		    }
-		    if (!blocked) { // we can get the king with the rook
+		    if (!blocked) { // can get the king with the rook/queen
+			System.out.print("rook not blocked ");
 			return true;
 		    }
-		} // rook and king on same rank
+		} // rook/queen and king on same rank
 		else if (file == k_file) {
 		    incr = (rank > k_rank) ? -1 : 1;
 		    for (int j = rank; j != k_rank; j += incr) {
@@ -308,38 +318,50 @@ public class Board {
 			    blocked = true;
 			}
 		    }
-		    if (!blocked) { // we can get the king with the rook
+		    if (!blocked) { // can get king with rook/queen
 			return true;
 		    }
-		} // rook and king on same file
-	    } // if rook ////////////////////////////////
+		} // rook/queen and king on same file
+	    } // if rook || queen ////////////////////////////////
 
 	    /********** Bishops **********************/
-	    else if (tempList[i].getType().equals("bishop")) {
+	    /******* Partial Queen ******************/
+	    else if (tempList[i].getType().equals("bishop") ||
+		     tempList[i].getType().equals("queen")) {
 	    	boolean blocked = false;
 	    	if (Math.abs(rank - k_rank) != Math.abs(file - k_file)) {
 	    	    blocked = true;
 	    	}
-		if (Math.abs(rank - k_rank) == 1) {
+		if (Math.abs(rank - k_rank) == 1 &&
+		    Math.abs(file - k_file) == 1) {
 		    return true; // bishop right next to king
 		}
 		int f_inc, r_inc, r, f;
 		f_inc = (file < k_file) ? 1 : -1;
+		if (file == k_rank) f_inc = 0;
 		r_inc = (rank < k_rank) ? 1 : -1;
+		if (rank == k_rank) r_inc = 0;
 		for (f = file, r = rank; (f != k_file) && (r != k_rank);
 		     f+=f_inc, r+=r_inc)
 		    {
 			int square = (NUM_RANKS * r) + f;
 			if (!tempBoard[square].isNull()) {
 			    blocked = true;
+		    
 			}
 		    }
-		    
-
-	    	if (!blocked) { // we can get the king with the bishop!!
+	    	if (!blocked) { // can get the king with the bishop/queen!!
 	    	    return true;
 	    	}
-	    } // if bishop ////////////////////////////
+	    } // if bishop || queen ////////////////////////////
+	    
+	    /**************** King *****************************/
+	    else if (tempList[i].getType().equals("king")) {
+		if (Math.abs(rank - k_rank) <= 1 &&
+		    Math.abs(file - k_file) <= 1) {
+		    return true;
+		}
+	    }
 	}
 	
 
@@ -358,11 +380,17 @@ public class Board {
     //but I have also realized it can facilitate command
     //line play.
     public void printBoard() {
+	printBoard(board);
+    }
+    public void printBoard(Piece[] _board) {
 
+	if (history.size() > 0) {
+	    System.out.println(history.peek());
+	}
 	for (int rank = NUM_RANKS - 1; rank >= 0; rank--) {
 	    for (int file = 0; file < NUM_FILES; file++) {
 		int pos = ((8 * rank) + file);
-		Piece cur = board[pos];
+		Piece cur = _board[pos];
 		if (cur.getType().equals("null")) {
 		    System.out.print("--");
 		}

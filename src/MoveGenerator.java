@@ -79,28 +79,26 @@ public class MoveGenerator {
 
 	//check for captures
 	if (fileLeft >= 0) {
-	    if (_curBoard.getPieceAt(fileLeft, oneUp).getColor().
-		equals(pawn.getColor()) ||
-		_curBoard.getPieceAt(fileLeft, oneUp).getType().
+	    if (_curBoard.getPieceAt(fileLeft, oneUp).getType().
 		equals("null")) {
 		fileLeft = -1;
 	    }
 	}
 	if (fileRight < Board.NUM_FILES) {
-	    if (_curBoard.getPieceAt(fileRight, oneUp).getColor().
-		equals(pawn.getColor()) ||
-		_curBoard.getPieceAt(fileRight, oneUp).getType().
+	    if (_curBoard.getPieceAt(fileRight, oneUp).getType().
 		equals("null")) {
 		fileRight = -1;
 	    }
 	}
+	if (fileLeft < 0) fileLeft = -1;
+	if (fileRight >= Board.NUM_FILES) fileRight = -1;
 	if (fileLeft != -1) {
 	    Board temp = new Board(_curBoard);
 	    String end = temp.getPieceAt(fileLeft, oneUp).
 		getSquare();
 	    if (temp.executeMove(start+end)) {
-		    posMoves.add(temp);
-		}
+		posMoves.add(temp);
+	    }
 	}
 	if (fileRight != -1) {
 	    Board temp = new Board(_curBoard);
@@ -124,10 +122,9 @@ public class MoveGenerator {
 
 	//check if two moves forward are allowed
 	if (((_curBoard.blackToMove() && 
-	      pawn.getColor().equals("black")) && rank == 7) ||
+	      pawn.getColor().equals("black")) && rank == 6) ||
 	    ((_curBoard.whiteToMove() &&
-	      pawn.getColor().equals("white")) && rank == 2)) {
-
+	      pawn.getColor().equals("white")) && rank == 1)) {
 	    int twoUp = oneUp+nextRank;
 	    Board temp = new Board(_curBoard);
 	    String end = temp.getPieceAt(file, twoUp).getSquare();
