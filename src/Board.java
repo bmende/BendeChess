@@ -130,7 +130,8 @@ public class Board {
      * move generation. False guarentees an illegal move,
      * while a return value of true does not guarentee that
      * the move is legal. Checks involve leaving the board,
-     * capturing a teammate. Checking for check soon to be added.
+     * capturing a teammate. Returns false if colorToMove
+     * is in check after move is completed.
      */
     public boolean executeMove(String move) {
 
@@ -220,6 +221,8 @@ public class Board {
     // if the side to move is in check at the end of move,
     // then the move is illegal. Pass in the move that we
     // want to check
+
+    //////////////// NOT YET CHECKING FOR CHECK FROM KNIGHTS ///////////////////
     public boolean colorToMoveInCheck(int startPos, int endPos) {
 	Piece king;
 	Piece[] tempList = new Piece[NUM_PIECES];
