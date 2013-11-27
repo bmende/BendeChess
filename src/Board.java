@@ -151,7 +151,7 @@ public class Board {
 	//before we change the board state, check if the 
 	//proposed move is legal
 	if (!moveIsLegal(s_file, s_rank, e_file, e_rank)) {
-	    System.out.println("move is illegal");
+	    System.out.println("move is illegal: "+move);
 	    return false;
 	}
 

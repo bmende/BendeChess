@@ -57,8 +57,14 @@ public class BendeChess {
 	if (cmd.topLevelCmd.equals("position")) {
 	    board.executeMove(cmd.gameHistory.peek());
 	}
-
-
+	if (cmd.topLevelCmd.equals("newgame")) {
+	    board = new Board();
+	}
+	if (cmd.topLevelCmd.equals("uci")) {
+	    System.out.println("id name BendeChess");
+	    System.out.println("id author Benjamin M.");
+	    System.out.println("uciok");
+	}
 	return true;
     }
 }

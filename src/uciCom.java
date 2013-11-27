@@ -90,6 +90,10 @@ public class uciCom {
 	    whatToDo.topLevelCmd = "quit";
 	    return whatToDo;
 	}
+	else if (cmd.equals("uci")) {
+	    whatToDo.topLevelCmd = "uci";
+	    return whatToDo;
+	}
 	return whatToDo;//in case nothing else worked
 	
     }
