@@ -204,13 +204,13 @@ public class Board {
 	int endPos = (NUM_RANKS*e_rank) + e_file;
 
 	if (board[endPos].getColor().equals(colorToMove)) {
-	    // System.out.println("Cant capture own piece!!!");
+	    System.out.println("Cant capture own piece!!!");
 	    return false;
 	}
 
 	//now to see how this moves affect inCheck status
 	if (colorToMoveInCheck(startPos, endPos)) {
-	    //  System.out.println("leaves you in check");
+	    System.out.println("leaves you in check");
 	    return false;
 	}
 	
@@ -291,8 +291,11 @@ public class Board {
 
 	    /***************** Rooks *******************/
 	    /************* Partial Queens ***************/
-	    else if (tempList[i].getType().equals("rook") ||
+	    if (tempList[i].getType().equals("rook") ||
 		     tempList[i].getType().equals("queen")) {
+		if (tempList[i].getType().equals("queen")) {
+		    System.out.println("checking the queen rook-style");
+		}
 		if ((Math.abs(rank - k_rank) == 1 && file == k_file)
 		    || (Math.abs(file - k_file) == 1 && rank == k_rank)) {
 		    //rook/queen is right next to the king, so check
@@ -329,8 +332,12 @@ public class Board {
 
 	    /********** Bishops **********************/
 	    /******* Partial Queen ******************/
-	    else if (tempList[i].getType().equals("bishop") ||
+	    if (tempList[i].getType().equals("bishop") ||
 		     tempList[i].getType().equals("queen")) {
+		if (tempList[i].getType().equals("queen")) {
+		    System.out.println("checking the queen bishop-style");
+		}
+
 	    	boolean blocked = false;
 	    	if (Math.abs(rank - k_rank) != Math.abs(file - k_file)) {
 	    	    blocked = true;
@@ -359,7 +366,7 @@ public class Board {
 	    } // if bishop || queen ////////////////////////////
 	    
 	    /**************** King *****************************/
-	    else if (tempList[i].getType().equals("king")) {
+	    if (tempList[i].getType().equals("king")) {
 		if (Math.abs(rank - k_rank) <= 1 &&
 		    Math.abs(file - k_file) <= 1) {
 		    return true;

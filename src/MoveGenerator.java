@@ -128,8 +128,10 @@ public class MoveGenerator {
 	    int twoUp = oneUp+nextRank;
 	    Board temp = new Board(_curBoard);
 	    String end = temp.getPieceAt(file, twoUp).getSquare();
-	    if (temp.executeMove(start+end)) {
-		posMoves.add(temp);
+	    if (temp.getPieceAt(file, twoUp).equals("null")) { // can't capture going forward with pawn
+		if (temp.executeMove(start+end)) {
+		    posMoves.add(temp);
+		}
 	    }
 	}
 
